@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Charsadda Online Shopping — Checkout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .checkout-item {transition: all .3s ease;}
+    .checkout-item:hover {background:#f9fafb;}
+    .color-circle {width:18px;height:18px;border-radius:50%;display:inline-block;border:1px solid #ccc;margin-left:5px;}
+    #toastContainer {position:fixed;top:1rem;right:1rem;z-index:11000;}
+  </style>
+</head>
+<body id="body">
+
+  <!-- Header -->
+  <header class="bg-primary text-white py-3 shadow-sm position-sticky top-0" style="z-index:9999;">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="index.html" class="d-flex align-items-center gap-3 text-white text-decoration-none">
+        <img src="assets/logo/charsadda-logo.svg" alt="logo" width="64" height="64">
+        <h1 class="h5 mb-0">Charsadda Online Shopping</h1>
+      </a>
+      <a href="cart.html" class="btn btn-light btn-sm d-flex align-items-center gap-2">
+        <i class="bi bi-cart"></i> Back to Cart
+      </a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container my-5">
+    <h2 class="fw-bold mb-4">Checkout</h2>
+
+    <!-- Cart Items Summary -->
+    <div id="checkoutProducts" class="card p-3 mb-4">
+      <h5>Your Order Summary</h5>
+      <div id="checkoutList" class="mt-3"></div>
+      <div class="text-end fw-bold mt-3">Total: $<span id="checkoutTotal">0.00</span></div>
+    </div>
+
+    <!-- Checkout Form -->
+    <form id="checkoutForm" class="bg-white p-4 rounded shadow">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">First Name</label>
+          <input id="firstName" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Last Name</label>
+          <input id="lastName" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input id="email" type="email" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone</label>
+          <input id="phone" type="tel" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Zip Code</label>
+          <input id="zip" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <textarea id="address" class="form-control" rows="2" required></textarea>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Payment Type</label>
+          <select id="paymentType" class="form-select" required>
+            <option value="">Select Payment Method</option>
+            <option>Cash on Delivery</option>
+            <option>Credit / Debit Card</option>
+            <option>EasyPaisa / JazzCash</option>
+          </select>
+        </div>
+        <div class="col-12 text-end mt-4">
+          <button class="btn btn-success btn-lg">
+            <i class="bi bi-bag-check"></i> Place Order
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <footer class="bg-light py-4 mt-5">
+    <div class="container text-center text-muted small">
+      © <span id="year3"></span> Charsadda Online Shopping
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('year3').textContent = new Date().getFullYear();
+      loadCheckoutItems();
+
+      document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleOrderSubmit();
+      });
+    });
+
+    // Load cart data from localStorage
+    function loadCheckoutItems() {
+      const cart = JSON.parse(localStorage.getItem('cart_v1') || '[]');
+      const list = document.getElementById('checkoutList');
+      const totalEl = document.getElementById('checkoutTotal');
+
+      if (cart.length === 0) {
+        list.innerHTML = '<div class="alert alert-warning">Your cart is empty. <a href="shop.html">Shop Now</a></div>';
+        totalEl.textContent = '0.00';
+        return;
+      }
+
+      let total = 0;
+      list.innerHTML = cart.map(item => {
+        total += item.price * item.qty;
+        return `
+          <div class="checkout-item border-bottom py-2 d-flex justify-content-between align-items-center flex-wrap">
+            <div class="d-flex align-items-center gap-3">
+              <img src="${item.image}" width="60" height="60" class="rounded shadow-sm">
+              <div>
+                <strong>${item.title}</strong><br>
+                <small class="text-muted">$${item.price.toFixed(2)} × ${item.qty}</small><br>
+                <span class="color-circle" style="background:${item.selectedColor}"></span>
+              </div>
+            </div>
+            <div class="fw-bold">$${(item.price * item.qty).toFixed(2)}</div>
+          </div>
+        `;
+      }).join('');
+
+      totalEl.textContent = total.toFixed(2);
+    }
+
+    // Submit order
+    function handleOrderSubmit() {
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const zip = document.getElementById('zip').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const pay = document.getElementById('paymentType').value;
+
+      if (!first || !last || !phone || !zip || !email || !address || !pay) {
+        showToast('⚠️ Please fill in all required fields', 'danger');
+        return;
+      }
+
+      // Clear cart & show success
+      localStorage.removeItem('cart_v1');
+      showToast('✅ Order placed successfully! Redirecting...', 'success');
+      setTimeout(() => window.location.href = 'index.html', 2500);
+    }
+
+    // Toast Message
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `alert alert-${type} shadow-sm`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+
+</body>
+</html>

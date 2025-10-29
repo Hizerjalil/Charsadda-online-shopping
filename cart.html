@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Charsadda Online Shopping — Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .cart-item {transition: all .3s ease;}
+    .cart-item:hover {transform: scale(1.01);}
+    .color-preview {width:20px; height:20px; border-radius:50%; border:1px solid #ccc;}
+    .toast-card {transition: opacity .3s ease;}
+  </style>
+</head>
+<body id="body">
+  <header class="bg-primary text-white py-3 shadow-sm position-sticky top-0" style="z-index:9999;">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="index.html" class="d-flex align-items-center gap-3 text-white text-decoration-none">
+        <img src="assets/logo/charsadda-logo.svg" alt="logo" width="56" height="56">
+        <h1 class="h5 mb-0">Charsadda Online Shopping</h1>
+      </a>
+      <a href="checkout.html" id="gotoCheckout" class="btn btn-light btn-sm d-flex align-items-center gap-2">
+        <i class="bi bi-cart-check"></i> Checkout
+      </a>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    <h2 class="fw-bold">🛒 Your Cart</h2>
+    <div id="cartArea" class="mt-4"></div>
+    <div class="mt-4 text-end">
+      <h4>Total: $<span id="cartTotal">0.00</span></h4>
+    </div>
+  </main>
+
+  <footer class="bg-light py-4 mt-5">
+    <div class="container text-center text-muted small">
+      © <span id="year2"></span> Charsadda Online Shopping
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toastContainer" style="position:fixed;top:1rem;right:1rem;z-index:11000;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ✅ Load correct cart key
+    let cart = JSON.parse(localStorage.getItem('cart_v1') || '[]');
+    const area = document.getElementById('cartArea');
+    const totalEl = document.getElementById('cartTotal');
+
+    function renderCart() {
+      area.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        area.innerHTML = '<div class="alert alert-info">Your cart is empty. <a href="shop.html" class="alert-link">Shop Now</a></div>';
+      } else {
+        cart.forEach((item, i) => {
+          total += item.price * item.qty;
+          const div = document.createElement('div');
+          div.className = 'cart-item border rounded p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap';
+          div.innerHTML = `
+            <div class="d-flex align-items-center gap-3">
+              <img src="${item.image}" width="70" height="70" class="rounded shadow-sm">
+              <div>
+                <h6>${item.title}</h6>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="color-preview" style="background:${item.selectedColor || '#ddd'}"></span>
+                  <small class="text-muted">$${item.price}</small>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+              <button class="btn btn-outline-secondary btn-sm" onclick="updateQty(${i}, -1)">−</button>
+              <span>${item.qty}</span>
+              <button class="btn btn-outline-secondary btn-sm" onclick="updateQty(${i}, 1)">+</button>
+              <button class="btn btn-danger btn-sm" onclick="removeItem(${i})"><i class="bi bi-trash"></i></button>
+            </div>`;
+          area.appendChild(div);
+        });
+      }
+      totalEl.textContent = total.toFixed(2);
+    }
+
+    function updateQty(i, delta) {
+      cart[i].qty += delta;
+      if (cart[i].qty <= 0) cart.splice(i, 1);
+      localStorage.setItem('cart_v1', JSON.stringify(cart));
+      renderCart();
+      showToast('Cart updated!');
+    }
+
+    function removeItem(i) {
+      cart.splice(i, 1);
+      localStorage.setItem('cart_v1', JSON.stringify(cart));
+      renderCart();
+      showToast('Item removed!');
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast-card bg-success text-white rounded p-2 mb-2 shadow';
+      el.innerHTML = `<i class='bi bi-check-circle'></i> ${msg}`;
+      c.appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2000);
+    }
+
+    renderCart();
+    document.getElementById('year2').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

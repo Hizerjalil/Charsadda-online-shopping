@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Charsadda Online Shopping — Shop</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Tailwind via CDN (for utility classes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="transition-colors" id="body">
+  <header class="bg-primary text-white py-3 shadow-sm position-sticky top-0" style="z-index:9999;">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="index.html" class="d-flex align-items-center gap-3 text-white text-decoration-none">
+        <img src="assets/logo/charsadda-logo.svg" alt="Charsadda Online Shopping" width="64" height="64">
+        <div>
+          <h1 class="h5 mb-0">Charsadda Online Shopping</h1>
+          <small class="text-white-50">Local ideas. Global reach.</small>
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="shop.html" class="btn btn-sm btn-outline-light me-2 d-none d-md-inline">Shop</a>
+        <a href="about.html" class="btn btn-sm btn-outline-light me-2 d-none d-md-inline">About</a>
+        <a href="contact.html" class="btn btn-sm btn-outline-light me-2 d-none d-md-inline">Contact</a>
+        <div class="me-3 d-none d-md-block">
+          <input id="searchInput" class="form-control" placeholder="Search products...">
+        </div>
+        <button id="themeToggle" class="btn btn-outline-light btn-sm">🌙</button>
+        <a href="cart.html" class="btn btn-light btn-sm position-relative">
+          Cart <span id="cartCount" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    <section class="mb-4">
+      <div class="card p-4 shadow-sm overflow-hidden">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+          <div>
+            <h2 class="mb-1">Shop the best — Charsadda Online Shopping</h2>
+            <p class="mb-0 text-muted">Filter by price, category, or view more details in a modal. Fully responsive and includes light/dark mode.</p>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <label class="m-0">Category</label>
+            <select id="categoryFilter" class="form-select form-select-sm">
+              <option value="all">All categories</option>
+            </select>
+            <label class="m-0 ms-3">Max price: <span id="priceLabel">$0</span></label>
+            <input id="priceRange" type="range" min="0" max="1000" value="1000" class="form-range ms-2" style="width:200px">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="spinner" class="text-center my-5">
+      <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+      <div class="mt-2 text-muted">Fetching products...</div>
+    </section>
+
+    <section id="products" class="row g-4"></section>
+
+    <nav class="mt-4">
+      <ul id="pagination" class="pagination justify-content-center"></ul>
+    </nav>
+  </main>
+
+  <!-- Product Modal -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="modalTitle" class="modal-title">Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body d-flex gap-4 flex-column flex-md-row">
+          <div class="flex-shrink-0 text-center" style="min-width:260px;">
+            <img id="modalImage" src="" alt="" class="img-fluid" style="max-height:300px; object-fit:contain;">
+          </div>
+          <div>
+            <p id="modalCategory" class="text-muted mb-1"></p>
+            <p id="modalDesc"></p>
+            <div class="mb-2"><strong>Price: $<span id="modalPrice"></span></strong></div>
+            <div class="mb-2">
+              <label class="form-label">Color</label>
+              <div id="colorSwatches" class="d-flex gap-2"></div>
+            </div>
+            <div>
+              <button id="modalAdd" class="btn btn-primary">Add to cart</button>
+              <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-light py-4 mt-5">
+    <div class="container text-center text-muted small">
+      <div>© <span id="year"></span> Charsadda Online Shopping — Hackathon project</div>
+      <div class="mt-2">About project: A responsive vanilla-JS e-commerce demo using FakeStoreAPI, localStorage cart, and simulated checkout.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <!-- Toast container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position:fixed;top:1rem;right:1rem;z-index:11000;"></div>
+
+</body>
+</html>
